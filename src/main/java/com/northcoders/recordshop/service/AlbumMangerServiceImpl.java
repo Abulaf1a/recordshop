@@ -23,6 +23,12 @@ public class AlbumMangerServiceImpl implements AlbumMangerService {
     }
 
     @Override
+    public List<Album> getAllAlbumsInStock(){
+
+        return albumManagerRepository.findAllByInStock();
+    }
+
+    @Override
     public Album postAlbum(Album album) {
         return albumManagerRepository.save(album);
     }
@@ -30,5 +36,42 @@ public class AlbumMangerServiceImpl implements AlbumMangerService {
     @Override
     public Optional<Album> getAlbumById(Long id){
         return albumManagerRepository.findById(id);
+    }
+
+    @Override
+    public Album updateAlbumById(Album album, Long id){
+
+        album.setId(id);
+
+        Optional<Album> currentOptional = getAlbumById(id);
+        if(currentOptional.isPresent()){
+            Album current = currentOptional.get();
+            if(album.getArtist() == null){
+                album.setArtist(current.getArtist());
+            }
+            if(album.getTitle() == null){
+                album.setTitle(current.getTitle());
+            }
+            if(album.getGenre() == null){
+                album.setGenre(current.getGenre());
+            }
+            if(album.getReleaseYear() == 0){
+                album.setReleaseYear(current.getReleaseYear());
+            }
+            if(album.getStock() == null){
+                album.setStock(current.getStock());
+            }
+        }
+
+        return albumManagerRepository.save(album);
+
+    }
+
+    public Boolean deleteAlbumById(Long id){
+        if(albumManagerRepository.findById(id).isPresent()){
+            albumManagerRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

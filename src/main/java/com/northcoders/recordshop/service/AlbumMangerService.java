@@ -7,9 +7,15 @@ import java.util.Optional;
 
 public interface AlbumMangerService {
 
-    public List<Album> getAllAlbums();
+    List<Album> getAllAlbums();
 
-    public Album postAlbum(Album album);
+    Album postAlbum(Album album);
 
     Optional<Album> getAlbumById(Long id);
+
+    Album updateAlbumById(Album album, Long id);
+
+    Boolean deleteAlbumById(Long id);
+
+    List<Album> getAllAlbumsInStock();
 }
