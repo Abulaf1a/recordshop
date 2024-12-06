@@ -1,5 +1,6 @@
 package com.northcoders.recordshop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +19,10 @@ public class Stock {
     private Long id;
 
     @Column
-    private int stockCount;
+    private int quantity;
 
-    @OneToOne
-    @JoinColumn(name = "album_id", referencedColumnName = "id")
+    //TODO: investigate whether this should include cascading setting
+    @JsonIgnore
+    @OneToOne(mappedBy = "stock")
     private Album album;
 }
