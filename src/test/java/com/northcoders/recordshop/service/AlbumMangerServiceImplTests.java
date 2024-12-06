@@ -4,6 +4,7 @@ import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.model.Genre;
 import com.northcoders.recordshop.model.Stock;
 import com.northcoders.recordshop.repository.AlbumManagerRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +63,23 @@ class AlbumMangerServiceImplTests {
 
         //Assert
         assertThat(actual).isEqualTo(album);
+    }
 
+    @Test
+    @DisplayName("Get album by id happy path - album exists")
+    void getAlbumById(){
+        //Arrange
+        Optional<Album> album = Optional.of(Album.builder().id(1L).title("album name").artist("artist")
+                .releaseYear(2024)
+                .genre(Genre.ROCK)
+                .stock(new Stock(1L, 200, null)).build());
 
+        when(mockAlbumManagerRepository.findById(1L)).thenReturn(album);
+
+        //Act
+        Optional<Album> actual = albumMangerServiceImpl.getAlbumById(1L);
+
+        //Assert
+        assertThat(actual).isEqualTo(album);
     }
 }
