@@ -82,4 +82,60 @@ class AlbumMangerServiceImplTests {
         //Assert
         assertThat(actual).isEqualTo(album);
     }
+
+    @Test
+    void getAllAlbumsInStock() {
+        Album albumInStock = Album.builder().id(1L).title("album in stock").artist("artist")
+                .releaseYear(2024)
+                .genre(Genre.ROCK)
+                .stock(new Stock(1L, 200, null)).build();
+
+//        Album albumNoStock = Album.builder().id(1L).title("album out of stock").artist("artist")
+//                .releaseYear(2024)
+//                .genre(Genre.ROCK)
+//                .stock(new Stock(1L, 0, null)).build();
+
+        List<Album> albums = List.of(albumInStock);
+
+        when(mockAlbumManagerRepository.findAllByInStock()).thenReturn(List.of(albumInStock));
+
+        List<Album> actual = albumMangerServiceImpl.getAllAlbumsInStock();
+
+        assertThat(actual).isEqualTo(albums);
+    }
+
+    @Test
+    void updateAlbumById() {
+
+        Album albumA = new Album(1L, "original album", 2024, "artist", Genre.ROCK, null);
+        Album albumB = new Album(1L, null, 0, "updated artist", Genre.ROCK, null);
+
+        Album compositeAlbum = new Album(1L, "original album", 2024, "updated artist", Genre.ROCK, null);
+
+        albumMangerServiceImpl.postAlbum(albumA);
+
+        when(mockAlbumManagerRepository.save(albumB)).thenReturn(compositeAlbum);
+
+        Album actual = albumMangerServiceImpl.updateAlbumById(albumB, 1L);
+
+        assertThat(actual).isEqualTo(compositeAlbum);
+
+    }
+
+    @Test
+    void deleteAlbumById() {
+        Album album = new Album(1L, "original album", 2024, "artist", Genre.ROCK, null);
+        Album album2 = new Album(1L, "second album", 2024, "artist", Genre.ROCK, null);
+
+        albumMangerServiceImpl.postAlbum(album);
+        albumMangerServiceImpl.postAlbum(album2);
+        when(mockAlbumManagerRepository.findAll()).thenReturn(List.of(album, album2));
+        List<Album> albums = albumMangerServiceImpl.getAllAlbums();
+        assertThat(albums).hasSize(2);
+
+        albumMangerServiceImpl.deleteAlbumById(1L);
+        when(mockAlbumManagerRepository.findAll()).thenReturn(List.of(album2));
+        List<Album> albumsAfterDelete = albumMangerServiceImpl.getAllAlbums();
+        assertThat(albumsAfterDelete).hasSize(1);
+    }
 }
