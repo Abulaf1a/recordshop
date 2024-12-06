@@ -22,11 +22,16 @@ public class AlbumManagerController {
         return new ResponseEntity<>(albumMangerService.getAllAlbums(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Album> getAlbumById(@PathVariable(value = "id") Optional<Long> idOptionak){
+    @GetMapping("/in-stock")
+    public ResponseEntity<List<Album>> getAllAlbumsInStock(){
+        return new ResponseEntity<>(albumMangerService.getAllAlbumsInStock(), HttpStatus.OK);
+    }
 
-        if(idOptionak.isPresent()){
-            Long idReal = idOptionak.get();
+    @GetMapping("/{id}")
+    public ResponseEntity<Album> getAlbumById(@PathVariable(value = "id") Optional<Long> idOptional){
+
+        if(idOptional.isPresent()){
+            Long idReal = idOptional.get();
             Optional<Album> album = albumMangerService.getAlbumById(idReal);
             if(album.isPresent()) return new ResponseEntity<>(album.get(), HttpStatus.OK);
         }
@@ -37,5 +42,26 @@ public class AlbumManagerController {
     @PostMapping
     public ResponseEntity<Album> postAlbum(@RequestBody Album album){
         return new ResponseEntity<>(albumMangerService.postAlbum(album), HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Album> updateAlbum(@PathVariable(value = "id") Optional<Long> idOptional, @RequestBody Album album){
+        if(idOptional.isPresent()){
+            Album updatedAlbum = albumMangerService.updateAlbumById(album, idOptional.get());
+            return new ResponseEntity<>(updatedAlbum, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new Album(), HttpStatus.NOT_FOUND);
+    }
+
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<String> deleteAlbum(@PathVariable(value = "id") Optional<Long> idOptional){
+        if(idOptional.isPresent()){
+            Boolean isDeleted = albumMangerService.deleteAlbumById(idOptional.get());
+            if(isDeleted) return new ResponseEntity<>("Album with id %d has been deleted".formatted(idOptional.get()), HttpStatus.OK);
+            return new ResponseEntity<>("No album with id %d to delete".formatted(idOptional.get()),HttpStatus.NOT_FOUND);
+        }
+        //this is never returned - if I don't enter an id the returned status 404 NOT FOUND
+        return new ResponseEntity<>("No id entered, please enter an id for the album you wish to delete", HttpStatus.NO_CONTENT);
     }
 }
