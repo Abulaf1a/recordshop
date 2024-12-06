@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AlbumMangerServiceImpl implements AlbumMangerService {
@@ -24,5 +25,10 @@ public class AlbumMangerServiceImpl implements AlbumMangerService {
     @Override
     public Album postAlbum(Album album) {
         return albumManagerRepository.save(album);
+    }
+
+    @Override
+    public Optional<Album> getAlbumById(Long id){
+        return albumManagerRepository.findById(id);
     }
 }
