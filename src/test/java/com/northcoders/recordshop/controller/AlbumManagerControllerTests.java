@@ -2,6 +2,7 @@ package com.northcoders.recordshop.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northcoders.recordshop.model.Album;
+import com.northcoders.recordshop.model.Genre;
 import com.northcoders.recordshop.model.Stock;
 import com.northcoders.recordshop.service.AlbumMangerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +51,7 @@ class AlbumManagerControllerTests {
         //Arrange
         List<Album> mockData = new ArrayList<>();
         Stock stockA = new Stock(1L, 30, new Album());
-        Album albumA = new Album(1L, "Mellon Collie and the Infinite Sadness", 1995, "Smashing Pumpkins", "Rock", stockA);
+        Album albumA = new Album(1L, "Mellon Collie and the Infinite Sadness", 1995, "Smashing Pumpkins", Genre.POP, stockA);
         //stockA.setAlbum(albumA);
         // including the above line will cause a JSON response body error with the following exception trace snippet:
             // net.minidev.json.parser.ParseException: Malicious payload, having non natural depths, parsing stoped on { at position 31969.
@@ -59,7 +60,7 @@ class AlbumManagerControllerTests {
         mockData.add(albumA);
 
         Stock stockB = new Stock(2L, 10, new Album());
-        Album albumB= new Album(2L, "Bookends", 1968, "Simon and Garfunkel", "Pop", stockB);
+        Album albumB= new Album(2L, "Bookends", 1968, "Simon and Garfunkel", Genre.POP, stockB);
         stockB.setAlbum(albumA);
         mockData.add(albumB);
 
@@ -81,7 +82,7 @@ class AlbumManagerControllerTests {
         //Arrange
         Album album = Album.builder().id(1L)
                 .title("Mellon collie")
-                .genre("Rock")
+                .genre(Genre.POP)
                 .stock(new Stock(1L, 10, null))
                 .artist("Smashing Pumpkins")
                 .releaseYear(1995)

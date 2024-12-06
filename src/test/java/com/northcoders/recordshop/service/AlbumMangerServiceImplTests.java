@@ -30,12 +30,12 @@ class AlbumMangerServiceImplTests {
         //Arrange
         List<Album> mockData = new ArrayList<>();
         Stock stockA = new Stock(1L, 30, new Album());
-        Album albumA = new Album(1L, "Mellon Collie and the Infinite Sadness", 1995, "Smashing Pumpkins", "Rock", stockA);
+        Album albumA = new Album(1L, "Mellon Collie and the Infinite Sadness", 1995, "Smashing Pumpkins", Genre.ROCK, stockA);
         stockA.setAlbum(albumA);
 
         mockData.add(albumA);
         Stock stockB = new Stock(2L, 10, new Album());
-        Album albumB= new Album(2L, "Bookends", 1968, "Simon and Garfunkel", "Pop", stockB);
+        Album albumB= new Album(2L, "Bookends", 1968, "Simon and Garfunkel", Genre.POP, stockB);
         mockData.add(albumB);
 
         when(mockAlbumManagerRepository.findAll()).thenReturn(mockData);
@@ -52,7 +52,7 @@ class AlbumMangerServiceImplTests {
     void postAlbum() {
         //Arrange
         Stock stock = new Stock(1L, 10, new Album());
-        Album album = new Album(1L, "Bookends", 1968, "Simon and Garfunkel", "Pop", stock);
+        Album album = new Album(1L, "Bookends", 1968, "Simon and Garfunkel", Genre.POP, stock);
         stock.setAlbum(album);
         when(mockAlbumManagerRepository.save(album)).thenReturn(album);
 
