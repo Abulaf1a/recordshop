@@ -1,5 +1,6 @@
 package com.northcoders.recordshop.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.model.Genre;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -136,5 +138,121 @@ class AlbumManagerControllerTests {
                 .andReturn();
 
         verify(mockAlbumMangerService, times(1)).getAlbumById(1L);
+    }
+
+    @Test
+    @DisplayName("Get all albums in stock")
+    void getAllAlbumsInStock() throws Exception {
+        Stock stockA = new Stock(1L, 10, null);
+        Album albumA = new Album(1L, "titleInStock", 2000, "artist", Genre.ROCK, stockA);
+        stockA.setAlbum(albumA);
+
+        Stock stockB = new Stock(1L, 0, null);
+        Album albumB = new Album(1L, "titleNotInStock", 2000, "artist", Genre.ROCK, stockB);
+        stockB.setAlbum(albumB);
+
+        when(mockAlbumMangerService.getAllAlbumsInStock()).thenReturn(List.of(albumA));
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.get("/album/in-stock"))
+                //.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("titleInStock"))
+                .andDo(print())
+                .andReturn();
+
+        verify(mockAlbumMangerService, times(1)).getAllAlbumsInStock();
+    }
+
+    @Test
+    @DisplayName("delete album by id - id exists")
+    void deleteAlbumById() throws Exception {
+        Album albumA = new Album(1L, "test", 2000, "artist", Genre.ROCK, null);
+
+        when(mockAlbumMangerService.deleteAlbumById(1L)).thenReturn(true);
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.delete("/album/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Album with id 1 has been deleted"))
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("delete album by id - no id exists")
+    void deleteAlbumById_noId() throws Exception {
+
+        when(mockAlbumMangerService.deleteAlbumById(1L)).thenReturn(false);
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.delete("/album/1"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value("No album with id 1 to delete"))
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("update album - album exists")
+    void updateAlbumById() throws Exception {
+
+        Album albumA = new Album(1L, "original album", 2000, "artist", Genre.ROCK, null);
+        Album albumB = new Album(1L, "updated album", 2000, "artist", Genre.ROCK, null);
+
+        mockAlbumMangerService.postAlbum(albumA);
+
+        when(mockAlbumMangerService.updateAlbumById(albumB, 1L)).thenReturn(albumB);
+
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.put("/album/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(albumB)))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("updated album"))
+                .andReturn();
+
+        verify(mockAlbumMangerService, times(1)).updateAlbumById(albumB, 1L);
+    }
+
+
+    @Test
+    @DisplayName("update album - no album exists with id, creates new entry")
+    void updateAlbumById_updateCertainFields() throws Exception {
+
+        Album albumA = new Album(1L, "original album", 2024, "artist", Genre.ROCK, null);
+        Album albumB = new Album(1L, null, 0, "updated artist", Genre.ROCK, null);
+
+        Album compositeAlbum = new Album(1L, "original album", 2024, "updated artist", Genre.ROCK, null);
+
+        when(mockAlbumMangerService.updateAlbumById(albumB, 1L)).thenReturn(compositeAlbum);
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.put("/album/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(albumB)))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("original album"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.artist").value("updated artist"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.releaseYear").value(2024))
+                .andReturn();
+
+        verify(mockAlbumMangerService, times(1)).updateAlbumById(albumB, 1L);
+    }
+
+    @Test
+    @DisplayName("update album no album exists")
+    void updateAlbumById_noAlbumExists() throws Exception {
+
+
+        Album albumB = new Album(1L, "updated album", 2000, "artist", Genre.ROCK, null);
+
+        when(mockAlbumMangerService.updateAlbumById(albumB, 1L)).thenReturn(albumB);
+
+        this.mockMvcController.perform(MockMvcRequestBuilders.put("/album/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(albumB)))
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("updated album"))
+                .andReturn();
+
+        verify(mockAlbumMangerService, times(1)).updateAlbumById(albumB, 1L);
     }
 }
