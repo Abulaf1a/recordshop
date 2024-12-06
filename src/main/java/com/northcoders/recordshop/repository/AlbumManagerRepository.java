@@ -1,11 +1,8 @@
 package com.northcoders.recordshop.repository;
 
 import com.northcoders.recordshop.model.Album;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
 import java.util.*;
 
