@@ -2,7 +2,11 @@ package com.northcoders.recordshop.controller;
 
 import com.northcoders.recordshop.model.Album;
 import com.northcoders.recordshop.service.AlbumMangerService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +32,17 @@ public class AlbumManagerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Album> getAlbumById(@PathVariable(value = "id") Optional<Long> idOptional){
+    public ResponseEntity<Album> getAlbumById(@PathVariable(value = "id") Optional<Long> idOptional, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 
         if(idOptional.isPresent()){
             Long idReal = idOptional.get();
-            Optional<Album> album = albumMangerService.getAlbumById(idReal);
+            Optional<Album> album = albumMangerService.getAlbumById(idReal, request);
             if(album.isPresent()) return new ResponseEntity<>(album.get(), HttpStatus.OK);
         }
+
+        //TODO: get the service layer to throw an exception,
+        //spring will recognise this exception has been thrown then automaticlly sends a response
+        //you have to create a ControllerAdvice layer -- google this!
 
         return new ResponseEntity<>(new Album(), HttpStatus.NOT_FOUND);
     }
