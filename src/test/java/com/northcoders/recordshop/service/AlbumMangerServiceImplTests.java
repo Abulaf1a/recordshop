@@ -90,11 +90,6 @@ class AlbumMangerServiceImplTests {
                 .genre(Genre.ROCK)
                 .stock(new Stock(1L, 200, null)).build();
 
-//        Album albumNoStock = Album.builder().id(1L).title("album out of stock").artist("artist")
-//                .releaseYear(2024)
-//                .genre(Genre.ROCK)
-//                .stock(new Stock(1L, 0, null)).build();
-
         List<Album> albums = List.of(albumInStock);
 
         when(mockAlbumManagerRepository.findAllByInStock()).thenReturn(List.of(albumInStock));
