@@ -1,7 +1,9 @@
 package com.northcoders.recordshop.service;
 
 import com.northcoders.recordshop.model.Album;
+import com.northcoders.recordshop.DTO.AlbumStockDTO;
 import com.northcoders.recordshop.repository.AlbumManagerRepository;
+import com.northcoders.recordshop.repository.StockManagerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,9 @@ public class AlbumMangerServiceImpl implements AlbumMangerService {
 
     @Autowired
     AlbumManagerRepository albumManagerRepository;
+
+    @Autowired
+    StockManagerRepository stockManagerRepository;
 
     @Override
     public List<Album> getAllAlbums() {

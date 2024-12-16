@@ -29,8 +29,14 @@ public class Album {
     @Column
     private Genre genre;
 
-    @OneToOne
-    @JoinColumn(name = "stock_id", referencedColumnName = "id")
+    //fetchType is a spring/bean specific thing
+    //cascadeType is a HIBERNATE type stuff thing. 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinTable(name = "stock_album",
+    joinColumns =
+            {@JoinColumn (name = "album_id", referencedColumnName = "id")},
+    inverseJoinColumns =
+            {@JoinColumn (name = "stock_id", referencedColumnName = "id")})
     private Stock stock;
 
 

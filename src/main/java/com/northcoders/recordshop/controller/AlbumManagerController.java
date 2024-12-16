@@ -1,6 +1,8 @@
 package com.northcoders.recordshop.controller;
 
+import com.northcoders.recordshop.mapper.Mapper;
 import com.northcoders.recordshop.model.Album;
+import com.northcoders.recordshop.DTO.AlbumStockDTO;
 import com.northcoders.recordshop.service.AlbumMangerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,9 @@ public class AlbumManagerController {
 
     @Autowired
     AlbumMangerService albumMangerService;
+
+    @Autowired //does this connect to the mapper?
+    Mapper mapper;
 
     @GetMapping
     public ResponseEntity<List<Album>> getAllAlbums(){
@@ -44,6 +49,12 @@ public class AlbumManagerController {
         return new ResponseEntity<>(albumMangerService.postAlbum(album), HttpStatus.CREATED);
     }
 
+    @PostMapping("/DTOTest")
+    public ResponseEntity<Album> postAlbumStock(@RequestBody AlbumStockDTO albumStock){
+        Album album = mapper.toAlbum(albumStock); //the mapper also saves the stock to the stock repo, with the stock model using the album as ID.
+        return new ResponseEntity<>(albumMangerService.postAlbum(album), HttpStatus.CREATED);
+    }
+
     @PutMapping(value = "/{id}")
     public ResponseEntity<Album> updateAlbum(@PathVariable(value = "id") Optional<Long> idOptional, @RequestBody Album album){
         if(idOptional.isPresent()){
@@ -61,6 +72,7 @@ public class AlbumManagerController {
             if(isDeleted) return new ResponseEntity<>("Album with id %d has been deleted".formatted(idOptional.get()), HttpStatus.OK);
             return new ResponseEntity<>("No album with id %d to delete".formatted(idOptional.get()),HttpStatus.NOT_FOUND);
         }
+
         //this is never returned - if I don't enter an id the returned status 404 NOT FOUND
         return new ResponseEntity<>("No id entered, please enter an id for the album you wish to delete", HttpStatus.NO_CONTENT);
     }

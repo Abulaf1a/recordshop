@@ -22,7 +22,13 @@ public class Stock {
     private int quantity;
 
     //TODO: investigate whether this should include cascading setting
+    //perhaps use @JsonBackReference, and also FetchType = LAZY;
     @JsonIgnore
-    @OneToOne(mappedBy = "stock")
+    @OneToOne(mappedBy = "stock", cascade = CascadeType.ALL)
     private Album album;
+
+    public Stock(int quantity, Album album){
+        this.quantity = quantity;
+        this.album = album;
+    }
 }
